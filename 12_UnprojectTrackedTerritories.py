@@ -11,7 +11,7 @@ chunk = doc.chunks[-1]
 print(f"Processing Chunk: {chunk.label}")
 
 # Read the CSV file into a DataFrame
-csv_path = '/Users/vivekhsridhar/Library/Mobile Documents/com~apple~CloudDocs/Documents/Metashape/TalChhapar/output/p1_territories_uv.csv'
+csv_path = '/Users/vivekhsridhar/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/Python/SpatialRegistration/io/test_territories_uv.csv'
 df = pd.read_csv(csv_path)
 
 # Initialize an empty list to store the data
@@ -28,7 +28,7 @@ for camera in chunk.cameras:
 		point = row['Point']
 		camera_label = row['Camera']
 		video = row['video']
-		frame = row['frame_seq']
+		frame = row['best_anchor_frame']
 		u = row['u']
 		v = row['v']
 
@@ -77,8 +77,7 @@ for camera in chunk.cameras:
 # Convert the list to a DataFrame
 df_output = pd.DataFrame(data)
 # Save the DataFrame to a CSV file
-output_csv_path = '/Users/vivekhsridhar/Library/Mobile Documents/com~apple~CloudDocs/Documents/Metashape/TalChhapar/output/points_3D_world.csv'
+output_csv_path = '/Users/vivekhsridhar/Library/Mobile Documents/com~apple~CloudDocs/Documents/Metashape/TalChhapar/output/testpoints_3D_world.csv'
 df_output.to_csv(output_csv_path, index=False)
 
 print(f"3D world coordinates saved to {output_csv_path}")
-

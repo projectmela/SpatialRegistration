@@ -12,7 +12,7 @@ def list_coordinates(file_path):
             data.append(tuple(values))
     return data
 
-def process_chunk(chunk, global_coordinates, frame_step=300):
+def process_chunk(chunk, global_coordinates):
     T = chunk.transform.matrix
 
     data_list = []
@@ -32,7 +32,7 @@ def process_chunk(chunk, global_coordinates, frame_step=300):
                     # Extract video and frame_seq from the camera label
                     camera_label_parts = camera.label.split('_')
                     video = '_'.join(camera_label_parts[:-1])
-                    frame_seq = int(camera_label_parts[-1])*frame_step
+                    frame_seq = int(camera_label_parts[-1][5:])
 
                     data_list.append([point_idx + 1, camera.label, video, frame_seq, u, v])
 
@@ -46,12 +46,12 @@ points = list_coordinates('/Users/vivekhsridhar/Library/Mobile Documents/com~app
 # Use active Metashape document
 doc = Metashape.app.document
 chunk = doc.chunks[-1]  # process the last chunk
-frame_step = 300        # frame_step to populate the dataframe
+# frame_step = 60        # frame_step to populate the dataframe
 
 # Process the current chunk
 df = pd.DataFrame()
 
-tmp = process_chunk(chunk, points, frame_step)
+tmp = process_chunk(chunk, points)
 df = pd.concat([df, tmp], ignore_index=True)
 
 # Save the results to a CSV file

@@ -4,7 +4,7 @@ import glob
 import os
 import pathlib
 import numpy as np
-import helper_functions as hf
+import helper_alignment as hf
 
 # The directories where videos are saved
 VideoDirectories = [

@@ -4,3 +4,4 @@
 *.txt
 *.pkl
 io/
+*__pycache__*
