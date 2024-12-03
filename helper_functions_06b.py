@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from multiprocessing import Pool, cpu_count
 
 import cv2
 import math
@@ -80,58 +81,66 @@ def identify_anchor_frames(df, thresholds):
     return anchor_frames
 
 
-def find_best_anchor_for_each_frame(df, anchor_frames, thresholds):
-    start_time = time.time()
-    
-    # Create a new column to store the best anchor frame for each frame
-    df['best_anchor_frame'] = np.nan
-    
-    # Loop through all frames
-    unique_frames = sorted(df['frame'].unique())
-    
-    for frame in unique_frames:
-        # If the frame itself is an anchor, set itself as the anchor
-        if frame in anchor_frames:
-            df.loc[df['frame'] == frame, 'best_anchor_frame'] = frame
+def process_frame(args):
+    frame, grouped_frames, anchor_frames = args
+    current_points = grouped_frames[frame]
+    best_anchor = None
+    best_inliers = 0
+
+    for anchor_frame in anchor_frames:
+        if anchor_frame not in grouped_frames:
             continue
         
-        # Compare against all preceding anchor frames
-        best_anchor = None
-        best_inliers = 0  # To keep track of the best match based on inliers
+        anchor_points = grouped_frames[anchor_frame]
+        merged_points = pd.merge(
+            current_points[['idx', 'x', 'y']],
+            anchor_points[['idx', 'x', 'y']],
+            on='idx',
+            suffixes=('_current', '_anchor')
+        )
         
-        for anchor_frame in anchor_frames:
-            # Get points in the current frame and the candidate anchor frame
-            current_points = df[df['frame'] == frame][['idx', 'x', 'y']]
-            anchor_points = df[df['frame'] == anchor_frame][['idx', 'x', 'y']]
-            
-            # Merge points on 'idx' to get corresponding points
-            merged_points = pd.merge(current_points, anchor_points, on='idx', suffixes=('_current', '_anchor'))
-            
-            if len(merged_points) < 4:
-                continue  # Skip if not enough points to calculate homography
-            
-            src_pts = merged_points[['x_anchor', 'y_anchor']].values
-            dst_pts = merged_points[['x_current', 'y_current']].values
-            
-            # Apply RANSAC to find homography
-            try:
-                H, mask = cv2.findHomography(dst_pts, src_pts, cv2.RANSAC)
-                inliers_count = np.sum(mask)  # Number of inliers
-            except cv2.error as e:
-                continue  # Skip if homography calculation failed
-            
-            # If this anchor frame gives more inliers, choose it as the best anchor
-            if inliers_count > best_inliers:
-                best_anchor = anchor_frame
-                best_inliers = inliers_count
+        if len(merged_points) < 4:
+            continue
         
-        # Assign the best anchor for the current frame
+        src_pts = merged_points[['x_anchor', 'y_anchor']].values
+        dst_pts = merged_points[['x_current', 'y_current']].values
+        
+        try:
+            H, mask = cv2.findHomography(dst_pts, src_pts, cv2.RANSAC)
+            inliers_count = np.sum(mask)
+        except cv2.error:
+            continue
+        
+        if inliers_count > best_inliers:
+            best_anchor = anchor_frame
+            best_inliers = inliers_count
+
+    return frame, best_anchor
+
+
+def find_best_anchor_for_each_frame_parallel(df, anchor_frames):
+    start_time = time.time()
+
+    # Initialize best anchor column
+    df['best_anchor_frame'] = np.nan
+
+    # Pre-group DataFrame by frame for quicker access
+    grouped_frames = {frame: group for frame, group in df.groupby('frame')}
+    unique_frames = list(grouped_frames.keys())
+    
+    # Prepare tasks for multiprocessing
+    tasks = [(frame, grouped_frames, anchor_frames) for frame in unique_frames]
+
+    # Use multiprocessing Pool
+    with Pool(processes=cpu_count()) as pool:
+        results = pool.map(process_frame, tasks)
+
+    # Assign results back to DataFrame
+    for frame, best_anchor in results:
         if best_anchor is not None:
             df.loc[df['frame'] == frame, 'best_anchor_frame'] = best_anchor
-    
-    end_time = time.time()
-    print('Finding the best anchors takes ', end_time - start_time)
-    
+
+    print('Finding the best anchors took', time.time() - start_time)
     return df
 
 

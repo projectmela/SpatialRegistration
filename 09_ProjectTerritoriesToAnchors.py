@@ -55,4 +55,4 @@ tmp = process_chunk(chunk, points)
 df = pd.concat([df, tmp], ignore_index=True)
 
 # Save the results to a CSV file
-df.to_csv('/Users/vivekhsridhar/Library/Mobile Documents/com~apple~CloudDocs/Documents/Metashape/TalChhapar/output/p1_territories_uv.csv', index=False)
+df.to_csv('/Users/vivekhsridhar/Library/Mobile Documents/com~apple~CloudDocs/Documents/Metashape/TalChhapar/output/p3_territories_uv.csv', index=False)
