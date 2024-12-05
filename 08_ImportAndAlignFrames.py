@@ -4,38 +4,39 @@ import glob
 import os
 import pathlib
 import numpy as np
-import helper_alignment as hf
+import helper_functions_08b as hf
 
 # The directories where videos are saved
-VideoDirectories = [
-    "/Users/vivekhsridhar/Library/Mobile Documents/com~apple~CloudDocs/Documents/Metashape/TalChhapar/videos/P1D1/",
-    "/Users/vivekhsridhar/Library/Mobile Documents/com~apple~CloudDocs/Documents/Metashape/TalChhapar/videos/P1D2/"
+ImagesDirectory = [
+    "/Volumes/EAS_shared/blackbuck/working/processed/TerritoryDetection2023/20230302/SM_Lek1/P1D1/"
 ]
 
-# The directory where frames must be imported
-ImageDirectory = "/Volumes/EAS_shared/blackbuck/working/rawdata/Field_Recording_2023/Original/SSD7/20230316/SE_Lek1/P1_Images/"
+import pathlib
 
-def list_videos(directory):
+def list_image_folders(directory):
     directory_path = pathlib.Path(directory)
-    video_extensions = ['.mp4', '.avi', '.mkv', '.mov', '.wmv']
+
+    # List all subdirectories
+    folder_names = [folder.name for folder in directory_path.iterdir() if folder.is_dir() and not folder.name.startswith('.')]
     
-    video_files = []
-    for file in directory_path.iterdir():
-        if not file.name.startswith('.') and file.suffix.lower() in video_extensions:
-            video_files.append((str(file.resolve()), file.stem))
-    
-    return video_files
+    return folder_names
 
-def import_frames(video_path, video_name, import_directory):
-    # Create a folder for each video
-    video_folder = os.path.join(import_directory, video_name)
-    os.makedirs(video_folder, exist_ok=True)
+def import_frames(import_directory):
+    # Get a list of all image files in the folder
+    image_extensions = ['.png', '.jpg', '.jpeg', '.tif', '.tiff']  # Supported image formats
+    image_files = [os.path.join(import_directory, f) for f in os.listdir(import_directory)
+                   if os.path.splitext(f)[1].lower() in image_extensions]
 
-    # Define the image names pattern for frames
-    image_names = os.path.join(video_folder, f'{video_name}_{{filenum:04}}.png')
+    # Ensure the folder contains images
+    if not image_files:
+        raise FileNotFoundError(f"No image files found in directory: {import_directory}")
 
-    # Import frames with custom frame step
-    chunk.importVideo(video_path, image_names, frame_step=Metashape.FrameStep.CustomFrameStep, custom_frame_step=300)
+    # Import images into the chunk
+    chunk.addPhotos(image_files)
+
+    print(f"Successfully imported {len(image_files)} images from {import_directory} into the chunk.")
+
+
 
 # Load current metashape document and assign the active chunk as reference
 doc = Metashape.app.document
@@ -45,39 +46,41 @@ hf.log( "Metashape version " + Metashape.app.version )
 hf.log_time()
 
 # Collect videos from all directories
-all_videos = []
-for video_dir in VideoDirectories:
-    all_videos.extend(list_videos(video_dir))
+all_folders = []
+for image_dir in ImagesDirectory:
+    all_folders.extend(list_image_folders(image_dir))
 
-# Check if any videos found
-if not all_videos:
-    hf.log("No videos found in the directories.")
-else:
-    # Create a single chunk for listed videos
-    chunk = doc.addChunk()
-    chunk.label = all_videos[0][1][:19]
+    print(all_folders)
 
-    # Import frames from listed videos
-    for video_path, video_name in all_videos:
-        import_frames(video_path, video_name, ImageDirectory)
+for label in all_folders:
+    # Check if any videos found
+    if not all_folders:
+        hf.log("No folders found in the parent directory.")
+    else:
+        # Create a single chunk for listed videos
+        chunk = doc.addChunk()
+        chunk.label = label
 
+        # Import frames from current folder
+        current_dir = ImagesDirectory[0] + label
+        import_frames(current_dir)
 
-# Parameters for feature matching photos
-match_photos_config = {
-    'downscale': 1,
-    'generic_preselection': True,
-    'reference_preselection': True,
-    'reference_preselection_mode': Metashape.ReferencePreselectionSource,
-    'keypoint_limit': 40000,
-    'tiepoint_limit': 4000
-}
+        # Parameters for feature matching photos
+        match_photos_config = {
+            'downscale': 1,
+            'generic_preselection': True,
+            'reference_preselection': True,
+            'reference_preselection_mode': Metashape.ReferencePreselectionSource,
+            'keypoint_limit': 40000,
+            'tiepoint_limit': 4000
+        }
 
-# Match photos and align cameras in chunk
-hf.log( "Processing chunk" )
-print(chunk.label)
+        # Match photos and align cameras in chunk
+        hf.log( "Processing chunk" )
+        print(chunk.label)
 
-chunk.matchPhotos(**match_photos_config)
-chunk.alignCameras()
+        chunk.matchPhotos(**match_photos_config)
+        chunk.alignCameras()
 
 hf.log_time()
 hf.log( "--- Finished workflow ---")
