@@ -8,7 +8,9 @@ import helper_functions_08b as hf
 
 # The directories where videos are saved
 ImagesDirectory = [
-    "/Volumes/EAS_shared/blackbuck/working/processed/TerritoryDetection2023/20230302/SM_Lek1/P1D1/"
+    "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/SpatialRegistration/20230302/SM_Lek1/P1D1/",
+    "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/SpatialRegistration/20230302/SM_Lek1/P2D3/",
+    "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/SpatialRegistration/20230302/SM_Lek1/P3D5/"
 ]
 
 import pathlib
@@ -52,7 +54,7 @@ for image_dir in ImagesDirectory:
 
     print(all_folders)
 
-for label in all_folders:
+for idx,label in enumerate(all_folders):
     # Check if any videos found
     if not all_folders:
         hf.log("No folders found in the parent directory.")
@@ -62,7 +64,7 @@ for label in all_folders:
         chunk.label = label
 
         # Import frames from current folder
-        current_dir = ImagesDirectory[0] + label
+        current_dir = ImagesDirectory[idx] + label
         import_frames(current_dir)
 
         # Parameters for feature matching photos
@@ -72,7 +74,7 @@ for label in all_folders:
             'reference_preselection': True,
             'reference_preselection_mode': Metashape.ReferencePreselectionSource,
             'keypoint_limit': 40000,
-            'tiepoint_limit': 4000
+            'tiepoint_limit': 10000
         }
 
         # Match photos and align cameras in chunk
