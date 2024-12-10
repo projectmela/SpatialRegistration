@@ -45,14 +45,23 @@ points = list_coordinates('/Users/vivekhsridhar/Library/Mobile Documents/com~app
 
 # Use active Metashape document
 doc = Metashape.app.document
-chunk = doc.chunks[-1]  # process the last chunk
-# frame_step = 60        # frame_step to populate the dataframe
 
-# Process the current chunk
-df = pd.DataFrame()
+date = '20230302'
+session = 'SM_Lek1'
+DRONE = ['P1D1', 'P1D2', 'P2D3', 'P2D4', 'P3D5', 'P3D6']
 
-tmp = process_chunk(chunk, points)
-df = pd.concat([df, tmp], ignore_index=True)
+for idx,chunk in enumerate(doc.chunks[2:]):
+    print(idx,chunk)
+    drone = DRONE[idx]
+    
+    base_dir = '/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/SpatialRegistration/' + date + '/' + session + '/TalChhapar_' + date + '_' + session + '/output/'
+    date_sess_drone = date + '_' + session + '_' + drone
 
-# Save the results to a CSV file
-df.to_csv('/Users/vivekhsridhar/Library/Mobile Documents/com~apple~CloudDocs/Documents/Metashape/TalChhapar/output/p3_territories_uv.csv', index=False)
+    # Process the current chunk
+    df = pd.DataFrame()
+
+    tmp = process_chunk(chunk, points)
+    df = pd.concat([df, tmp], ignore_index=True)
+
+    # Save the results to a CSV file
+    df.to_csv(base_dir + date_sess_drone + '_territories_uv.csv', index=False)
