@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib as plot 
 import matplotlib.pyplot as plt
 from scipy.spatial import KDTree
+import os
 import argparse
 from tqdm import tqdm
 
@@ -57,7 +58,7 @@ class territoryMatching:
         """Save the file with 
         """
         storage = file_name.split(".")[0]
-        storage += "_mapping.csv"
+        storage += "_matched.csv"
         self.t_id_dlc_updated.to_csv(storage, index = False)
     
     def startMatching(self,start_frame_count = 0, end_frame_count = 0, threshold = 50):
@@ -214,23 +215,30 @@ class territoryMatching:
 
 def main(args):
     # Access command-line arguments via args.<argument_name>
-    print(f"Input file dlc: {args.input_file_dlc}")
+    print(f"Input file dlc: {args.dlc_folder}")
     print(f"Input file meta: {args.input_file_meta}")
     
-    dlc_file = args.input_file_dlc
+    # Identify DLC files ending with "_Anchored.csv"
+    dlc_files = [os.path.join(args.dlc_folder, file) for file in os.listdir(args.dlc_folder) if file.endswith('_Anchored.csv')]
+    if not dlc_files:
+        raise FileNotFoundError(f"No files ending with '_Anchored.csv' found in the folder {args.dlc_folder}.")
     metashape_file = args.input_file_meta
-    
-    # Initialize class with names of the files (path)
-    matching = territoryMatching(file_dlc_anchor= dlc_file, file_metashape_anchor= metashape_file)
-    # Initiate matching
-    matching.startMatching()
-    # Save file 
-    matching.saveFinalMapping(dlc_file)
-    
-    # Debug for testing with information of specific frames 
-    # matching.startMatching(start_frame_count= 200, end_frame_count= 203)
-    # meta,dlc= matching.extract_frame_info(201)
-    # matching.plot_both_together(meta, dlc)
+
+    # Validate the DLC folder
+    if not os.path.exists(args.dlc_folder) or not os.path.isdir(args.dlc_folder):
+        raise FileNotFoundError(f"The folder {args.dlc_folder} does not exist or is not a directory.")
+
+    # Validate the Metashape file
+    if not os.path.exists(args.input_file_meta):
+        raise FileNotFoundError(f"The file {args.input_file_meta} does not exist.")
+
+    # Process each DLC file
+    for dlc_file in dlc_files:
+        print(f"Processing: {dlc_file}")
+        matching = territoryMatching(file_dlc_anchor=dlc_file, file_metashape_anchor=args.input_file_meta)
+        matching.startMatching()
+        matching.saveFinalMapping(dlc_file)
+        print(f"Saved output for: {dlc_file}")
     
 
 if __name__ == "__main__":
@@ -239,22 +247,19 @@ if __name__ == "__main__":
 
     # Add arguments
     parser.add_argument(
-        "-d", "--input_file_dlc", 
+        "-d", "--dlc_folder", 
         type=str, 
-        required=False, 
-        help="Path to the input file",
-        default="20230310_SE_Lek1_P1D1_DJI_0190_Anchored.csv"
+        required=True, 
+        help="Path to the folder containing DLC CSV files",
     )
     
     parser.add_argument(
         "-m", "--input_file_meta", 
         type=str, 
-        required=False, 
-        help="Path to the output file",
-        default="p1_territories_uv.csv"
+        required=True, 
+        help="Path to the Metashape CSV file",
     )
     
-
     # Parse arguments
     args = parser.parse_args()
 
