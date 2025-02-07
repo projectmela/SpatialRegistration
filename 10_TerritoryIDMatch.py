@@ -218,10 +218,16 @@ def main(args):
     print(f"Input file dlc: {args.dlc_folder}")
     print(f"Input file meta: {args.input_file_meta}")
     
-    # Identify DLC files ending with "_Anchored.csv"
-    dlc_files = [os.path.join(args.dlc_folder, file) for file in os.listdir(args.dlc_folder) if file.endswith('_Anchored.csv')]
+    # Identify DLC files ending with "_Anchored.csv" and ignore hidden files
+    dlc_files = [
+        os.path.join(args.dlc_folder, file)
+        for file in os.listdir(args.dlc_folder)
+        if file.endswith('_Anchored.csv') and not file.startswith("._")  # Ignore hidden files
+    ]
+
     if not dlc_files:
-        raise FileNotFoundError(f"No files ending with '_Anchored.csv' found in the folder {args.dlc_folder}.")
+        raise FileNotFoundError(f"No valid files ending with '_Anchored.csv' found in the folder {args.dlc_folder}.")
+
     metashape_file = args.input_file_meta
 
     # Validate the DLC folder

@@ -8,9 +8,12 @@ import helper_functions_08b as hf
 
 # The directories where videos are saved
 ImagesDirectory = [
-    "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/SpatialRegistration/20230302/SM_Lek1/P1D1/",
-    "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/SpatialRegistration/20230302/SM_Lek1/P2D3/",
-    "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/SpatialRegistration/20230302/SM_Lek1/P3D5/"
+    # "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/20230302/SM_Lek1/P1D1/",
+    "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/20230302/SM_Lek1/P1D2/",
+    # "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/20230302/SM_Lek1/P2D3/",
+    # "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/20230302/SM_Lek1/P2D4/",
+    # "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/20230302/SM_Lek1/P3D5/",
+    # "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/20230302/SM_Lek1/P3D6/"
 ]
 
 import pathlib
@@ -73,8 +76,8 @@ for idx,label in enumerate(all_folders):
             'generic_preselection': True,
             'reference_preselection': True,
             'reference_preselection_mode': Metashape.ReferencePreselectionSource,
-            'keypoint_limit': 40000,
-            'tiepoint_limit': 10000
+            'keypoint_limit': 60000,
+            'tiepoint_limit': 15000
         }
 
         # Match photos and align cameras in chunk
