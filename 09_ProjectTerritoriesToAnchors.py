@@ -54,7 +54,7 @@ for idx,chunk in enumerate(doc.chunks[2:]):
     print(idx,chunk)
     drone = DRONE[idx]
     
-    base_dir = '/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/SpatialRegistration/' + date + '/' + session + '/TalChhapar_' + date + '_' + session + '/output/'
+    base_dir = '/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/' + date + '/' + session + '/TalChhapar_' + date + '_' + session + '/output/'
     date_sess_drone = date + '_' + session + '_' + drone
 
     # Process the current chunk
