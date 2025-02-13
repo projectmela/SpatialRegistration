@@ -9,11 +9,11 @@ import helper_functions_08b as hf
 # The directories where videos are saved
 ImagesDirectory = [
     "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/20230302/SM_Lek1/P1D1/",
-    "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/20230302/SM_Lek1/P1D2/",
-    "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/20230302/SM_Lek1/P2D3/",
-    "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/20230302/SM_Lek1/P2D4/",
-    "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/20230302/SM_Lek1/P3D5/",
-    "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/20230302/SM_Lek1/P3D6/"
+    # "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/20230302/SM_Lek1/P1D2/",
+    # "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/20230302/SM_Lek1/P2D3/",
+    # "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/20230302/SM_Lek1/P2D4/",
+    # "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/20230302/SM_Lek1/P3D5/",
+    # "/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/20230302/SM_Lek1/P3D6/"
 ]
 
 import pathlib
@@ -63,8 +63,8 @@ for idx,label in enumerate(all_folders):
         hf.log("No folders found in the parent directory.")
     else:
         # Create a single chunk for listed videos
-        chunk = doc.addChunk()
-        chunk.label = label
+        # chunk = doc.addChunk()
+        # chunk.label = label
 
         # Import frames from current folder
         current_dir = ImagesDirectory[idx] + label
@@ -76,16 +76,16 @@ for idx,label in enumerate(all_folders):
             'generic_preselection': True,
             'reference_preselection': True,
             'reference_preselection_mode': Metashape.ReferencePreselectionSource,
-            'keypoint_limit': 60000,
-            'tiepoint_limit': 20000
+            'keypoint_limit': 40000,
+            'tiepoint_limit': 10000
         }
 
         # Match photos and align cameras in chunk
         hf.log( "Processing chunk" )
         print(chunk.label)
 
-        chunk.matchPhotos(**match_photos_config)
-        chunk.alignCameras()
+        # chunk.matchPhotos(**match_photos_config)
+        # chunk.alignCameras(reset_alignment=False)
 
 hf.log_time()
 hf.log( "--- Finished workflow ---")

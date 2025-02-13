@@ -71,13 +71,13 @@ def process_camera(camera, df_dict, surface, transform_matrix, chunk):
 # Main Processing
 date = '20230302'
 session = 'SM_Lek1'
-DRONE = ['P1D2']  # Keep this dynamic for future expansions
+DRONE = ['P1D1']  # Keep this dynamic for future expansions
 
 doc = Metashape.app.document
 chunk = doc.chunks[0]
 surface = chunk.model
 
-for idx, chunk in enumerate(doc.chunks[3:4]):  # Keep chunk iteration intact
+for idx, chunk in enumerate(doc.chunks[2:3]):  # Keep chunk iteration intact
     print(f"Processing Chunk: {idx}, {chunk.label}")
     drone = DRONE[idx]
 
