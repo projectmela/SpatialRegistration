@@ -20,7 +20,7 @@ def process_camera(camera, df_dict, surface, transform_matrix, chunk):
     processed_points = 0
 
     for _, row in df_filtered.iterrows():
-        point, video, frame, u, v = row['Point'], row['video'], row['best_anchor_frame'], row['u'], row['v']
+        point, video, frame, class_id, class_name, u, v = row['Point'], row['video'], row['best_anchor_frame'], row['class_id'], row['class_name'], row['u'], row['v']
         coords_2D = Metashape.Vector([u, v])
 
         # Attempt to pick a point on the model surface with jitter
@@ -30,7 +30,6 @@ def process_camera(camera, df_dict, surface, transform_matrix, chunk):
         while point_internal is None and jitter <= max_jitter:
             for _ in range(max_attempts):
                 coords_3D = camera.unproject(coords_2D)
-                print(f"Camera: {camera.label}, u: {u}, v: {v}, Unprojected 3D: {coords_3D}")
                 
                 point_internal = surface.pickPoint(camera.center, coords_3D)
                 if point_internal:
@@ -55,6 +54,8 @@ def process_camera(camera, df_dict, surface, transform_matrix, chunk):
             'Camera': camera.label,
             'Video': video,
             'frame': frame,
+            'class_id': class_id,
+            'class_name': class_name,
             'u': u,
             'v': v,
             'x': point3D_world.x,
@@ -70,7 +71,7 @@ def process_camera(camera, df_dict, surface, transform_matrix, chunk):
 # Main Processing
 date = '20230302'
 session = 'SM_Lek1'
-DRONE = ['P1D1', 'P1D2', 'P2D3', 'P2D4', 'P3D5', 'P3D6']
+DRONE = ['P2D3', 'P2D4']#, 'P2D3', 'P2D4', 'P3D5', 'P3D6']
 
 doc = Metashape.app.document
 chunk = doc.chunks[0]
@@ -81,7 +82,7 @@ for drone in DRONE:
     base_dir = f'/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/{date}/{session}/{drone}'
 
     # Get a sorted list of CSV files using glob
-    csv_files = sorted(glob.glob(os.path.join(base_dir, '*_Metashape_uv.csv')))
+    csv_files = sorted(glob.glob(os.path.join(base_dir, '*_trajectories_uv.csv')))
 
     for csv_file in csv_files:
         csv_path = os.path.join(base_dir, csv_file)
@@ -118,7 +119,7 @@ for drone in DRONE:
 
         # Convert to DataFrame and save
         df_output = pd.DataFrame(all_data)
-        output_csv_path = os.path.join(base_dir, csv_file.replace('_Metashape_uv.csv', '_3D_territories.csv'))
+        output_csv_path = os.path.join(base_dir, csv_file.replace('_trajectories_uv.csv', '_3D_trajectories.csv'))
         df_output.to_csv(output_csv_path, index=False)
 
         print(f"3D world coordinates saved to {output_csv_path}")

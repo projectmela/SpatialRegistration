@@ -22,19 +22,21 @@ def process_chunk(chunk, global_coordinates):
         print(f"Image pixel coordinates of point {point_idx + 1} with global coordinates ({chunk.crs.name}): {global_coord}")
 
         for i, camera in enumerate(chunk.cameras):
-            project_point = camera.project(p)
+            camera_label_parts = camera.label.split('_')
 
-            if project_point:
-                u = project_point.x  # u pixel coordinates in camera
-                v = project_point.y  # v pixel coordinates in camera
+            if len(camera_label_parts) == 7:
+                project_point = camera.project(p)
 
-                if 0 <= u <= camera.sensor.width and 0 <= v <= camera.sensor.height:
-                    # Extract video and frame_seq from the camera label
-                    camera_label_parts = camera.label.split('_')
-                    video = '_'.join(camera_label_parts[:-1])
-                    frame_seq = int(camera_label_parts[-1][5:])
+                if project_point:
+                    u = project_point.x  # u pixel coordinates in camera
+                    v = project_point.y  # v pixel coordinates in camera
 
-                    data_list.append([point_idx + 1, camera.label, video, frame_seq, u, v])
+                    if 0 <= u <= camera.sensor.width and 0 <= v <= camera.sensor.height:
+                        # Extract video and frame_seq from the camera label
+                        video = '_'.join(camera_label_parts[:-1])
+                        frame_seq = int(camera_label_parts[-1][5:])
+
+                        data_list.append([point_idx + 1, camera.label, video, frame_seq, u, v])
 
     columns = ['Point', 'Camera', 'video', 'frame_seq', 'u', 'v']
     df = pd.DataFrame(data_list, columns=columns)
@@ -45,23 +47,16 @@ points = list_coordinates('/Users/vivekhsridhar/Library/Mobile Documents/com~app
 
 # Use active Metashape document
 doc = Metashape.app.document
+chunk = doc.chunks[0]
 
 date = '20230302'
 session = 'SM_Lek1'
-DRONE = ['P1D1', 'P1D2', 'P2D3', 'P2D4', 'P3D5', 'P3D6']
+date_session = date + '_' + session
 
-for idx,chunk in enumerate(doc.chunks[2:]):
-    print(idx,chunk)
-    drone = DRONE[idx]
-    
-    base_dir = '/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/' + date + '/' + session + '/TalChhapar_' + date + '_' + session + '/output/'
-    date_sess_drone = date + '_' + session + '_' + drone
+base_dir = '/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/' + date + '/' + session + '/TalChhapar_' + date + '_' + session + '/output/'
 
-    # Process the current chunk
-    df = pd.DataFrame()
+# Process the current chunk
+df = process_chunk(chunk, points)
 
-    tmp = process_chunk(chunk, points)
-    df = pd.concat([df, tmp], ignore_index=True)
-
-    # Save the results to a CSV file
-    df.to_csv(base_dir + date_sess_drone + '_territories_uv.csv', index=False)
+# Save the results to a CSV file
+df.to_csv(base_dir + date_session + '_territories_uv.csv', index=False)
