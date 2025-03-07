@@ -1,7 +1,7 @@
 This repository focuses on georeferencing the movement data obtained from tracking our blackbuck videos. The output of these series of scripts will be lat-lon coordinates of all the tracked animals, thus placing data from several drones within the same coordinate reference.
 
 
-Step 1
+### Step 1
 
 The first step of the registration process is to have a track the blackbuck territory markings. Since these are stationary features in the environment—features with known coordinates in our orthomosaic—we can use this tracking output in subsequent steps to map image coordinates to world coordinates.
 
@@ -17,7 +17,7 @@ Note that territory detection using DLC does not do tracking, i.e., it does not 
 This completes step 1 of the registration process.
 
 
-Step 2
+### Step 2
 
 The second step of the registration process is actually registering video frames to the orthomosaic using Agisoft Metashape. One caveat here is that we cannot register all frames from our videos to the orthomosaic. This is time-intensive, computationally expensive, and impractical. We will therefore identify select frames, called anchor frames, that we will register to the orthomosaic with Metashape. We will then use homography (on the tracked territory points from step 1) to get transformation matrices to go from the rest of our frames to their corresponding anchor frames. Note that a key thing to sort out for step 2 tis to match territory identities from the tracked videos in step 1 and the identities in the orthomosaic. These identity correspondences are important for homography to work.
 
@@ -32,4 +32,4 @@ The second step of the registration process is actually registering video frames
 Run this script using the following command in the terminal `python3 10_TerritoryIDMatch.py -d "path/to/directory/with/*_Anchored.csv/files" -m "path/to/projected/territories/on/anchors"`.
 
 
-Step 3
+### Step 3
