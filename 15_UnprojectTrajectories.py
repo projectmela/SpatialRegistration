@@ -58,9 +58,9 @@ def process_camera(camera, df_dict, surface, transform_matrix, chunk):
             'class_name': class_name,
             'u': u,
             'v': v,
-            'x': point3D_world.x,
-            'y': point3D_world.y,
-            'z': point3D_world.z
+            'latitude': point3D_world.x,
+            'longitude': point3D_world.y,
+            'altitude': point3D_world.z
         })
         processed_points += 1
 
