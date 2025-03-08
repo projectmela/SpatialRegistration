@@ -1,7 +1,7 @@
-This repository focuses on georeferencing the movement data obtained from tracking our blackbuck videos. The output of these series of scripts will be lat-lon coordinates of all the tracked animals, thus placing data from several drones within the same coordinate reference.
+This repository focuses on georeferencing the movement data obtained from tracking our blackbuck videos. The output of these series of scripts will be lat-lon coordinates of all the tracked animals, thus placing data from several drones within the same coordinate reference. Note that this entire pipeline needs to follow the creation of an orthomosaic where we will embed the movement data.
 
 
-### Step 1
+### Step 1: Track stationary markers in the environment (in this case, the blackbuck territories)
 
 The first step of the registration process is to have a track the blackbuck territory markings. Since these are stationary features in the environment—features with known coordinates in our orthomosaic—we can use this tracking output in subsequent steps to map image coordinates to world coordinates.
 
@@ -17,7 +17,7 @@ Note that territory detection using DLC does not do tracking, i.e., it does not 
 This completes step 1 of the registration process.
 
 
-### Step 2
+### Step 2: Register the stationary markers to the orthomosaic (used to compute error in our pipeline)
 
 The second step of the registration process is actually registering video frames to the orthomosaic using Agisoft Metashape. One caveat here is that we cannot register all frames from our videos to the orthomosaic. This is time-intensive, computationally expensive, and impractical. We will therefore identify select frames, called anchor frames, that we will register to the orthomosaic with Metashape. We will then use homography (on the tracked territory points from step 1) to get transformation matrices to go from the rest of our frames to their corresponding anchor frames. Note that a key thing to sort out for step 2 tis to match territory identities from the tracked videos in step 1 and the identities in the orthomosaic. These identity correspondences are important for homography to work.
 
@@ -39,7 +39,7 @@ Run this script within Agisoft Metashape's Python API.
 We can easily use this output and compare our unprojected territory coordinates with the ground truth (marked on our orthomosaic) to calculate the average error in our pipeline.
 
 
-### Step 3
+### Step 3: Register the moving objects of interest to the orthomosaic
 
 The final step of this pipeline involves transforming coordinates from our blackbuck tracking to geospatial coordinates. The steps are analogous to coordinate transformation done for the territories in step 2. So each script in step 3 will ideally have its parallel in step 2.
 
