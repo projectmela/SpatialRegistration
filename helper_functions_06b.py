@@ -30,13 +30,13 @@ def identify_anchor_frames(df, thresholds):
     start_time = time.time()
     
     # Initialize variables
-    anchor_frames = [0]  # Start with frame 0 as the first anchor frame
+    anchor_frames = [df['frame'].min()]  # Start with frame 0 as the first anchor frame
     
     # Get unique frames, sorted to process in order
     unique_frames = sorted(df['frame'].unique())
     
     # Set initial anchor frame
-    anchor_frame = 0
+    anchor_frame = df['frame'].min()
     
     for frame in unique_frames:
         if frame == anchor_frame:
@@ -152,8 +152,8 @@ def apply_homography_to_best_anchor(df):
     
     # Initialize with the identity matrix for frame 0
     identity_matrix = np.eye(3)
-    homography_matrices[0] = identity_matrix  # Frame 0 is its own anchor
-    rms_errors[0] = 0  # No error for frame 0 as it's its own anchor
+    homography_matrices[df['frame'].min()] = identity_matrix  # Frame 0 is its own anchor
+    rms_errors[df['frame'].min()] = 0  # No error for frame 0 as it's its own anchor
     
     df['transformed_x'] = np.nan
     df['transformed_y'] = np.nan
