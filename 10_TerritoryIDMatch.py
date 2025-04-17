@@ -256,7 +256,7 @@ if __name__ == "__main__":
         "-d", "--dlc_folder", 
         type=str, 
         required=True, 
-        help="Path to the folder containing DLC CSV files",
+        help="Path to the directory containing the territory tracking '*_Anchored.csv' files",
     )
     
     parser.add_argument(

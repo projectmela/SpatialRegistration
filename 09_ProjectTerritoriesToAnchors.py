@@ -49,11 +49,11 @@ points = list_coordinates('/Users/vivekhsridhar/Library/Mobile Documents/com~app
 doc = Metashape.app.document
 chunk = doc.chunks[0]
 
-date = '20230302'
+date = '20230318'
 session = 'SM_Lek1'
 date_session = date + '_' + session
 
-base_dir = '/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/' + date + '/' + session + '/TalChhapar_' + date + '_' + session + '/output/'
+base_dir = '/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/SpatialRegistration/' + date + '/' + session + '/TalChhapar_' + date + '_' + session + '/output/'
 
 # Process the current chunk
 df = process_chunk(chunk, points)
