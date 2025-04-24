@@ -57,8 +57,8 @@ def process_camera(camera, df_dict, surface, transform_matrix, chunk):
             'frame': frame,
             'u': u,
             'v': v,
-            'latitude': point3D_world.x,
-            'longitude': point3D_world.y,
+            'latitude': point3D_world.y,
+            'longitude': point3D_world.x,
             'altitude': point3D_world.z
         })
         processed_points += 1
@@ -68,8 +68,8 @@ def process_camera(camera, df_dict, surface, transform_matrix, chunk):
     return data
 
 # Main Processing
-date = '20230302'
-session = 'SM_Lek1'
+date = '20230316'
+session = 'SE_Lek1'
 DRONE = ['P1D1', 'P1D2', 'P2D3', 'P2D4', 'P3D5', 'P3D6']
 
 doc = Metashape.app.document
@@ -78,7 +78,7 @@ surface = chunk.model
 
 for drone in DRONE:
     # Define the input/output directory
-    base_dir = f'/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/TestRegistration/{date}/{session}/{drone}'
+    base_dir = f'/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/SpatialRegistration/{date}/{session}/{drone}'
 
     # Get a sorted list of CSV files using glob
     csv_files = sorted(glob.glob(os.path.join(base_dir, '*_Metashape_uv.csv')))

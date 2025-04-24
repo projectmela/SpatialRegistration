@@ -73,11 +73,13 @@ class territoryMatching:
         # Assuming all files start from frame 0, if not then we might have a problem 
         if end_frame_count == 0 or end_frame_count > self.total_no_of_frames:
             end_frame_count = self.total_no_of_frames  
-              
-        if start_frame_count < end_frame_count:
-            print("WARNING! Frame counter value is higher than no of frames to be processed")
-            
-        for query_frame in tqdm(range (start_frame_count, end_frame_count), desc="Frame processing"):
+        
+        # Only process frames that actually exist in the DLC dataframe
+        existing_frames = sorted(
+            frame for frame in self.t_id_dlc_anchor['frame'].dropna().unique()
+        )
+
+        for query_frame in tqdm(existing_frames, desc="Frame processing"):
 
             t_id_anchor_filter, t_id_dlc_anchor_filter = self.extract_frame_info(query_frame)
             
@@ -105,14 +107,10 @@ class territoryMatching:
         df_id_anchor = pd.read_csv(self.metashpe_anchor)
         size = df_id_anchor.shape[0]
         df_id_anchor = df_id_anchor.dropna()
-        if size != df_id_anchor.shape[0]:
-            print("Anchor frame has NAN values, version cleaned")
         
         df_id_dlc_anchor = pd.read_csv(self.dlc_anchor)
         size = df_id_dlc_anchor.shape[0]
         df_id_dlc_anchor = df_id_dlc_anchor.dropna()
-        if size != df_id_dlc_anchor.shape[0]:
-            print("DLC frame has NAN values, version cleaned")
         
         return df_id_anchor, df_id_dlc_anchor
     
@@ -215,8 +213,8 @@ class territoryMatching:
 
 def main(args):
     # Access command-line arguments via args.<argument_name>
-    print(f"Input file dlc: {args.dlc_folder}")
-    print(f"Input file meta: {args.input_file_meta}")
+    print(f"Input DLC folder: {args.dlc_folder}")
+    print(f"Input Metashape file: {args.input_file_meta}")
     
     # Identify DLC files ending with "_Anchored.csv" and ignore hidden files
     dlc_files = [
@@ -240,11 +238,9 @@ def main(args):
 
     # Process each DLC file
     for dlc_file in dlc_files:
-        print(f"Processing: {dlc_file}")
         matching = territoryMatching(file_dlc_anchor=dlc_file, file_metashape_anchor=args.input_file_meta)
         matching.startMatching()
         matching.saveFinalMapping(dlc_file)
-        print(f"Saved output for: {dlc_file}")
     
 
 if __name__ == "__main__":
