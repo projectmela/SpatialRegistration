@@ -63,13 +63,11 @@ def process_camera(camera, df_dict, surface, transform_matrix, chunk):
         })
         processed_points += 1
 
-    elapsed_time = time.time() - start_time
-    print(f"[INFO] Camera '{camera.label}' processed {processed_points} points, skipped {skipped_points}. Time taken: {elapsed_time:.2f} seconds.")
     return data
 
 # Main Processing
-date = '20230316'
-session = 'SE_Lek1'
+date = '20230309'
+session = 'SM_Lek1'
 DRONE = ['P1D1', 'P1D2', 'P2D3', 'P2D4', 'P3D5', 'P3D6']
 
 doc = Metashape.app.document
