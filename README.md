@@ -36,8 +36,7 @@ Run this script using the following command in the terminal `python3 10_Territor
 `12_UnprojectTrackedTerritories.py` unprojects all territory coordinates from our initial tracking onto the orthomosaic. At the end of this step, we have successfully transformed our territory locations from image coordinates to geospatial coordinates!!!
 Run this script within Agisoft Metashape's Python API.
 
-Finally, we run `13_ComputeError_PlotTrajectories.ipynb` to compare the above output (coordinates of the unprojected territories) with the ground truth (coordinates marked on our orthomosaic) to calculate the average error in our pipeline. Technically, we now have everything we need for the registration pipeline—the transformation matrices and an error measure to validate the pipeline. We only have to apply the right transformations to the blackbuck trajectories now and voila, we'll have blackbuck movement in geospatial coordinates! 
-
+Finally, we run `13_ComputeError_PlotTrajectories.ipynb` to compare the above output (coordinates of the unprojected territories) with the ground truth (coordinates marked on our orthomosaic) to calculate the average error in our pipeline. Technically, we now have everything we need for the registration pipeline—the transformation matrices and an error measure to validate the pipeline. We only have to apply the right transformations to the blackbuck trajectories now and voila, we'll have blackbuck movement in geospatial coordinates!
 
 ### Step 3: Register the moving objects of interest to the orthomosaic
 

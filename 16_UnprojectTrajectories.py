@@ -71,7 +71,7 @@ def process_camera(camera, df_dict, surface, transform_matrix, chunk):
 # Main Processing
 date = '20230306'
 session = 'SM_Lek1'
-DRONE = ['P3D5', 'P3D6']#, 'P2D3', 'P2D4', 'P3D5', 'P3D6']
+DRONE = ['P1D1', 'P1D2']#, 'P2D3', 'P2D4', 'P3D5', 'P3D6']
 
 doc = Metashape.app.document
 chunk = doc.chunks[0]
