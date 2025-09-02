@@ -20,28 +20,14 @@ def process_camera(camera, df_dict, surface, transform_matrix, chunk):
     processed_points = 0
 
     for _, row in df_filtered.iterrows():
-        point, video, frame, class_id, class_name, u, v = row['Point'], row['video'], row['best_anchor_frame'], row['class_id'], row['class_name'], row['u'], row['v']
+        frame, x, y, point, video, best_anchor_frame, class_id, class_name, u, v = row['frame'], row['x'], row['y'], row['Point'], row['video'], row['best_anchor_frame'], row['class_id'], row['class_name'], row['u'], row['v']
+
         coords_2D = Metashape.Vector([u, v])
+        coords_3D = camera.unproject(coords_2D)            
 
-        # Attempt to pick a point on the model surface with jitter
-        point_internal = None
-        jitter, max_jitter, max_attempts = 0.0001, 0.1, 3
-
-        while point_internal is None and jitter <= max_jitter:
-            for _ in range(max_attempts):
-                coords_3D = camera.unproject(coords_2D)
-                
-                point_internal = surface.pickPoint(camera.center, coords_3D)
-                if point_internal:
-                    break
-                coords_2D = Metashape.Vector([
-                    u + np.random.uniform(-jitter, jitter),
-                    v + np.random.uniform(-jitter, jitter)
-                ])
-            jitter *= 10  # Increase jitter level
-
+        point_internal = surface.pickPoint(camera.center, coords_3D)
         if point_internal is None:
-            print(f"Surface model could not be found despite jitters. Camera: {camera.label}, u: {u}, v: {v}")
+            print(f"Surface model could not be found. Camera: {camera.label}, u: {u}, v: {v}")
             skipped_points += 1
             continue  # Skip to next point if no projection
 
@@ -50,10 +36,13 @@ def process_camera(camera, df_dict, surface, transform_matrix, chunk):
 
         # Append data
         data.append({
+            'frame': frame,
+            'x': x,
+            'y': y,
             'Point': point,
             'Camera': camera.label,
             'Video': video,
-            'frame': frame,
+            'anchor_frame': best_anchor_frame,
             'class_id': class_id,
             'class_name': class_name,
             'u': u,
@@ -69,8 +58,8 @@ def process_camera(camera, df_dict, surface, transform_matrix, chunk):
     return data
 
 # Main Processing
-date = '20230303'
-session = 'SE_Lek1'
+date = '20230318'
+session = 'SM_Lek1'
 DRONE = ['P1D1', 'P1D2', 'P2D3', 'P2D4', 'P3D5', 'P3D6']
 
 doc = Metashape.app.document
@@ -79,7 +68,7 @@ surface = chunk.model
 
 for drone in DRONE:
     # Define the input/output directory
-    base_dir = f'/Volumes/EAS_shared/blackbuck/working/processed/Field_Recording_2023/SpatialRegistration/{date}/{session}/{drone}'
+    base_dir = f'/Volumes/SSD5/{date}/{session}/{drone}'
 
     # Get a sorted list of CSV files using glob
     csv_files = sorted(glob.glob(os.path.join(base_dir, '*_trajectories_uv.csv')))
