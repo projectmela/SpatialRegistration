@@ -58,9 +58,9 @@ def process_camera(camera, df_dict, surface, transform_matrix, chunk):
     return data
 
 # Main Processing
-date = '20230318'
-session = 'SM_Lek1'
-DRONE = ['P1D1', 'P1D2', 'P2D3', 'P2D4', 'P3D5', 'P3D6']
+date = '20230313'
+session = 'SE_Lek1'
+DRONE = ['P1D1']#, 'P2D3', 'P2D4', 'P3D5', 'P3D6']
 
 doc = Metashape.app.document
 chunk = doc.chunks[0]
@@ -73,7 +73,7 @@ for drone in DRONE:
     # Get a sorted list of CSV files using glob
     csv_files = sorted(glob.glob(os.path.join(base_dir, '*_trajectories_uv.csv')))
     
-    for csv_file in csv_files:
+    for csv_file in csv_files[17:]:
         csv_path = os.path.join(base_dir, csv_file)
         print(f"Processing file: {csv_file}")
 

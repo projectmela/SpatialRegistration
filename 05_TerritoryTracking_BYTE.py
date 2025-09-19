@@ -4,9 +4,9 @@ from boxmot import OCSORT, BYTETracker
 from bbtrack_yolo.BBoxDetection import BBoxDetection
 from bbtrack_yolo.BBoxTracker import BBoxTracker
 
-DATE = ['20230315', '20230317', '20230318']
+DATE = ['20230318']#, '20230317', '20230318']
 SESSION = ['SM_Lek1']#, 'SE_Lek1']
-DRONE = ['P1D1']#, 'P1D2', 'P2D3', 'P2D4', 'P3D5', 'P3D6']
+DRONE = ['P3D5']#, 'P1D2', 'P2D3', 'P2D4', 'P3D5', 'P3D6']
 
 file_directory = '/home/vsridhar/samba/blackbuck/working/processed/TerritoryDetection2023/SSD7'
 
